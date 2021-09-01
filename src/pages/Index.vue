@@ -1,13 +1,17 @@
 <template>
   <q-page class="flex flex-center">
-    Hello
+    <viewer />
   </q-page>
 </template>
 
 <script>
 import { defineComponent } from 'vue';
+import Viewer from '../components/viewer/viewer'
 
 export default defineComponent({
-  name: 'PageIndex'
+  name: 'PageIndex',
+  components: {
+    Viewer
+  }
 })
 </script>
