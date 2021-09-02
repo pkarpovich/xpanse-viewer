@@ -6,7 +6,7 @@
 
 <script>
 import { defineComponent } from "vue";
-import Viewer from "../components/viewer/viewer";
+import Viewer from "../components/viewer/viewer-controller";
 
 export default defineComponent({
   name: "PageIndex",

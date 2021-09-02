@@ -9,11 +9,13 @@
     "dev": "quasar dev",
     "build": "quasar build",
     "lint": "eslint --ext .js,.vue ./",
-    "test": "echo \"No test specified\" && exit 0"
+    "test": "echo \"No test specified\" && exit 0",
+    "manifest-generator": "node src/manifest-generator.mjs public/frames/stuttgart-pump"
   },
   "dependencies": {
     "@quasar/extras": "^1.0.0",
     "core-js": "^3.6.5",
+    "nanoid": "^3.1.25",
     "quasar": "^2.0.0"
   },
   "devDependencies": {
