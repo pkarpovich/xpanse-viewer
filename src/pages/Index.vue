@@ -1,7 +1,12 @@
 <template>
   <q-page class="flex flex-center">
     <suspense>
-      <viewer name="stuttgart-pump" />
+      <template #default>
+        <viewer name="stuttgart-pump" />
+      </template>
+      <template #fallback>
+        <div>Loading...</div>
+      </template>
     </suspense>
   </q-page>
 </template>
