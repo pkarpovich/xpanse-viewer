@@ -1,16 +1,6 @@
 import { access, readdir, writeFile } from "fs/promises";
 import { nanoid } from "nanoid";
-
-const of = (promise) =>
-  Promise.resolve(promise)
-    .then((result) => [result])
-    .catch((err) => {
-      if (typeof err === "undefined") {
-        err = new Error("Rejection with empty value");
-      }
-
-      return [undefined, err];
-    });
+import { of } from "await-of";
 
 const MANIFEST_FILE_NAME = "manifest.json";
 
@@ -34,20 +24,23 @@ const [files] = await of(readdir(folderPath));
 if (!files.length) {
   throw new Error(`Folder don't have any files: ${folderPath}`);
 }
+const folderPublicPath = folderPath.split("/").slice(1).join("/");
 
-const manifest = files.reduce(
-  (manifest, fileName) => ({
-    ...manifest,
-    frames: [
-      ...manifest.frames,
-      {
-        id: nanoid(),
-        file: `${folderPath}/${fileName}`,
-      },
-    ],
-  }),
-  initialManifestObject
-);
+const manifest = files
+  .filter((f) => f.split(".").pop() !== "json")
+  .reduce(
+    (manifest, fileName) => ({
+      ...manifest,
+      frames: [
+        ...manifest.frames,
+        {
+          id: nanoid(),
+          file: `${folderPublicPath}/${fileName}`,
+        },
+      ],
+    }),
+    initialManifestObject
+  );
 
 const [, manifestErr] = await of(
   writeFile(`${folderPath}/${MANIFEST_FILE_NAME}`, JSON.stringify(manifest))
