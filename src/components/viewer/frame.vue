@@ -1,18 +1,17 @@
 <template>
-  <canvas
-    style="border: black 1px solid"
-    ref="canvasRef"
-    :id="id"
-    @mousemove="handleMouseMove"
-    @mousedown="handleMouseDown"
-  />
+  <div class="canvas-container" ref="canvasContainerRef">
+    <canvas
+      ref="canvasRef"
+      :id="id"
+      @mousemove="handleMouseMove()($event)"
+      @mousedown="handleMouseDown"
+    />
+  </div>
 </template>
 
 <script>
 import { defineComponent } from "vue";
 import { throttle } from "lodash-es";
-
-const THROTTLE_WAIT = 16;
 
 export default defineComponent({
   name: "Frame",
@@ -21,40 +20,43 @@ export default defineComponent({
       type: Object,
       required: true,
     },
-    width: {
-      type: Number,
-      required: true,
-    },
-    height: {
-      type: Number,
-      required: true,
-    },
     id: {
       type: String,
+    },
+    framesInterval: {
+      type: Number,
+      required: true,
     },
   },
   data() {
     return {
+      resizeObserver: null,
       ctx: null,
+      width: 0,
+      height: 0,
     };
   },
   emits: ["stop-animation", "change-frame"],
   mounted() {
-    const canvas = this.$refs.canvasRef;
+    this.resizeObserver = new ResizeObserver(this.handleResize);
+    this.resizeObserver.observe(this.$refs.canvasContainerRef);
 
-    this.ctx = canvas.getContext("2d");
-    canvas.width = this.width;
-    canvas.height = this.height;
+    this.ctx = this.$refs.canvasRef.getContext("2d");
 
-    this.drawFrame(this.frame, this.width, this.height);
+    this.drawFrame(this.frame)();
   },
   beforeUpdate() {
-    requestAnimationFrame(this.drawFrame(this.frame, this.width, this.height));
+    requestAnimationFrame(this.drawFrame(this.frame));
+  },
+  beforeUnmount() {
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect();
+    }
   },
   methods: {
-    drawFrame(frame, width = frame.width, height = frame.height) {
+    drawFrame(frame) {
       return () => {
-        this.ctx.clearRect(0, 0, width, height);
+        this.ctx.clearRect(0, 0, this.width, this.height);
         this.ctx.drawImage(
           frame,
           0,
@@ -63,23 +65,47 @@ export default defineComponent({
           frame.height,
           0,
           0,
-          width,
-          height
+          this.width,
+          this.height
         );
       };
     },
-    handleMouseMove: throttle(function (e) {
-      if (e.buttons === 1) {
-        this.$emit("change-frame", {
-          delta: e.movementX,
-        });
-      }
-    }, THROTTLE_WAIT),
-    handleMouseDown(e) {
+    handleMouseDown() {
       this.$emit("stop-animation");
+    },
+    handleMouseMove() {
+      return throttle((e) => {
+        if (e.buttons === 1) {
+          this.$emit("change-frame", {
+            delta: e.movementX,
+          });
+        }
+      }, this.framesInterval);
+    },
+    handleResize(entries) {
+      const [container] = entries;
+      const { width, height } = container.contentRect;
+      const canvas = this.$refs.canvasRef;
+
+      this.width = width;
+      this.height = height;
+
+      canvas.width = this.width;
+      canvas.height = this.height;
     },
   },
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+canvas {
+  width: 100%;
+  object-fit: contain;
+  border: black 1px solid;
+}
+
+.canvas-container {
+  width: 100%;
+  height: 100%;
+}
+</style>

@@ -1,14 +1,12 @@
 <template>
-  <q-page class="flex flex-center">
-    <suspense>
-      <template #default>
-        <viewer name="stuttgart-pump" />
-      </template>
-      <template #fallback>
-        <div>Loading...</div>
-      </template>
-    </suspense>
-  </q-page>
+  <suspense>
+    <template #default>
+      <viewer name="stuttgart-pump" />
+    </template>
+    <template #fallback>
+      <div>Loading...</div>
+    </template>
+  </suspense>
 </template>
 
 <script>
@@ -23,3 +21,10 @@ export default defineComponent({
   },
 });
 </script>
+
+<style>
+body {
+  width: 100%;
+  height: 100%;
+}
+</style>

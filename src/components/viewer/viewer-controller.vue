@@ -1,12 +1,13 @@
 <template>
-  <frame
-    :frame="currentFrame.frame"
-    :id="currentFrame.id"
-    :width="1100"
-    :height="800"
-    @stop-animation="stopAnimation"
-    @change-frame="handleChangeFrame"
-  />
+  <div class="container">
+    <frame
+      :frame="currentFrame.frame"
+      :id="currentFrame.id"
+      :framesInterval="framesInterval"
+      @stop-animation="stopAnimation"
+      @change-frame="handleChangeFrame"
+    />
+  </div>
   <!--  <frames-timeline :frames="frames" :currentFrameId="currentFrame.id" />-->
 </template>
 
@@ -16,10 +17,10 @@ import { of } from "await-of";
 import { api } from "boot/axios";
 
 import Frame from "./frame";
-import FramesTimeline from "./frames-timeline";
+// import FramesTimeline from "./frames-timeline";
 
 const FPS = 60;
-const FRAMES_INTERVAL_TIMEOUT = 1000 / FPS;
+const FRAMES_INTERVAL = 1000 / FPS;
 
 export default defineComponent({
   name: "ViewerController",
@@ -37,6 +38,7 @@ export default defineComponent({
     return {
       currentFrameIndex: 0,
       framesIntervalId: null,
+      framesInterval: FRAMES_INTERVAL,
     };
   },
   computed: {
@@ -82,14 +84,14 @@ export default defineComponent({
       this.currentFrameIndex =
         nextFrameIndex < 0
           ? this.frames.length - 1
-          : nextFrameIndex <= this.frames.length
+          : nextFrameIndex < this.frames.length
           ? nextFrameIndex
           : 0;
     },
     startAnimation() {
       this.framesIntervalId = setInterval(
         this.setNextFrameIndex,
-        FRAMES_INTERVAL_TIMEOUT
+        this.framesInterval
       );
     },
     stopAnimation() {
@@ -102,4 +104,10 @@ export default defineComponent({
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.container {
+  display: flex;
+  width: 100%;
+  height: 70%;
+}
+</style>
