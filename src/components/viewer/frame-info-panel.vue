@@ -21,5 +21,6 @@ export default defineComponent({
   border: 1px solid black;
   padding: 30px;
   border-radius: 30px;
+  user-select: none;
 }
 </style>

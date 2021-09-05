@@ -15,8 +15,15 @@
       />
     </div>
   </div>
-
-  <!--  <frames-timeline :frames="frames" :currentFrameId="currentFrame.id" />-->
+  <div class="timeline-container" ref="timelineContainer">
+    <frames-timeline
+      :frames="frames"
+      :currentFrameId="currentFrame.id"
+      :framesInterval="framesInterval"
+      @click="handleFrameClick"
+      @stop-animation="stopAnimation"
+    />
+  </div>
 </template>
 
 <script>
@@ -26,7 +33,7 @@ import { api } from "boot/axios";
 
 import Frame from "./frame";
 import FrameInfoPanel from "./frame-info-panel";
-// import FramesTimeline from "./frames-timeline";
+import FramesTimeline from "./frames-timeline";
 
 const FPS = 60;
 const FRAMES_INTERVAL = 1000 / FPS;
@@ -34,7 +41,7 @@ const FRAMES_INTERVAL = 1000 / FPS;
 export default defineComponent({
   name: "ViewerController",
   components: {
-    // FramesTimeline,
+    FramesTimeline,
     FrameInfoPanel,
     Frame,
   },
@@ -107,6 +114,12 @@ export default defineComponent({
           : nextFrameIndex < this.frames.length
           ? nextFrameIndex
           : 0;
+
+      if (this.framesIntervalId) {
+        this.$refs.timelineContainer
+          .querySelector(`#${this.frames[this.currentFrameIndex].id}`)
+          ?.scrollIntoView?.();
+      }
     },
     startAnimation() {
       this.framesIntervalId = setInterval(
@@ -116,9 +129,16 @@ export default defineComponent({
     },
     stopAnimation() {
       clearInterval(this.framesIntervalId);
+      this.framesIntervalId = null;
     },
     handleChangeFrame({ delta }) {
       this.setNextFrameIndex(delta);
+    },
+    handleFrameClick(id) {
+      this.stopAnimation();
+      const frameIndex = this.frames.findIndex((f) => f.id === id);
+
+      this.setNextFrameIndex(frameIndex - this.currentFrameIndex);
     },
   },
 });
@@ -131,12 +151,23 @@ export default defineComponent({
   display: flex;
 }
 
+.timeline-container {
+  width: 100%;
+  height: 30%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  overflow: scroll;
+  padding: 30px;
+}
+
 .frame-container {
   display: flex;
   width: 70%;
   height: 100%;
   padding: 30px;
 }
+
 .info-panel-container {
   width: 30%;
   padding: 30px;

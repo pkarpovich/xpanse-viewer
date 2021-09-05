@@ -92,6 +92,8 @@ export default defineComponent({
 
       canvas.width = this.width;
       canvas.height = this.height;
+
+      this.drawFrame(this.frame)();
     },
   },
 });

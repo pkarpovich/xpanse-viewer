@@ -1,12 +1,17 @@
 <template>
-  <div class="timeline-container" ref="timelineContainer">
+  <div
+    v-for="item in frames"
+    :key="item.id"
+    :class="`frame-container ${
+      currentFrameId === item.id ? 'frame-container--selected' : ''
+    }`"
+    @click="handleClick(item.id)"
+  >
     <frame
-      v-for="item in frames"
-      :key="item.id"
       :id="item.id"
       :frame="item.frame"
-      :width="300"
-      :height="250"
+      :frames-interval="framesInterval"
+      @stop-animation="handleStopAnimation"
     />
   </div>
 </template>
@@ -26,22 +31,37 @@ export default defineComponent({
       type: String,
       required: true,
     },
+    framesInterval: {
+      type: Number,
+      required: true,
+    },
   },
   components: {
     Frame,
   },
-  watch: {
-    currentFrameId(id) {
-      this.$refs.timelineContainer.querySelector(`#${id}`)?.scrollIntoView();
+  emits: ["click", "stop-animation"],
+  methods: {
+    handleClick(id) {
+      this.$emit("click", id);
+    },
+    handleStopAnimation() {
+      this.$emit("stop-animation");
     },
   },
 });
 </script>
 
-<style>
-.timeline-container {
-  display: flex;
-  flex-direction: row;
-  overflow: scroll;
+<style scoped>
+.container {
+}
+
+.frame-container {
+  min-width: 30%;
+  height: 65%;
+  margin: 30px;
+}
+
+.frame-container--selected {
+  height: 80%;
 }
 </style>
