@@ -1,13 +1,21 @@
 <template>
-  <div class="container">
-    <frame
-      :frame="currentFrame.frame"
-      :id="currentFrame.id"
-      :framesInterval="framesInterval"
-      @stop-animation="stopAnimation"
-      @change-frame="handleChangeFrame"
-    />
+  <div class="main-part-container">
+    <div class="info-panel-container">
+      <frame-info-panel>
+        <div v-if="!!frameInfoPanel" v-html="frameInfoPanel.template"></div>
+      </frame-info-panel>
+    </div>
+    <div class="frame-container">
+      <frame
+        :frame="currentFrame.frame"
+        :id="currentFrame.id"
+        :framesInterval="framesInterval"
+        @stop-animation="stopAnimation"
+        @change-frame="handleChangeFrame"
+      />
+    </div>
   </div>
+
   <!--  <frames-timeline :frames="frames" :currentFrameId="currentFrame.id" />-->
 </template>
 
@@ -17,6 +25,7 @@ import { of } from "await-of";
 import { api } from "boot/axios";
 
 import Frame from "./frame";
+import FrameInfoPanel from "./frame-info-panel";
 // import FramesTimeline from "./frames-timeline";
 
 const FPS = 60;
@@ -26,12 +35,17 @@ export default defineComponent({
   name: "ViewerController",
   components: {
     // FramesTimeline,
+    FrameInfoPanel,
     Frame,
   },
   props: {
     name: {
       type: String,
       required: true,
+    },
+    infoRanges: {
+      type: Array,
+      required: false,
     },
   },
   data() {
@@ -44,6 +58,12 @@ export default defineComponent({
   computed: {
     currentFrame() {
       return this.frames[this.currentFrameIndex];
+    },
+    frameInfoPanel() {
+      return this.infoRanges?.find(
+        (i) =>
+          i.from <= this.currentFrameIndex && i.to >= this.currentFrameIndex
+      );
     },
   },
 
@@ -105,9 +125,20 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.container {
-  display: flex;
+.main-part-container {
   width: 100%;
   height: 70%;
+  display: flex;
+}
+
+.frame-container {
+  display: flex;
+  width: 70%;
+  height: 100%;
+  padding: 30px;
+}
+.info-panel-container {
+  width: 30%;
+  padding: 30px;
 }
 </style>

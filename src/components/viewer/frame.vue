@@ -102,6 +102,7 @@ canvas {
   width: 100%;
   object-fit: contain;
   border: black 1px solid;
+  border-radius: 30px;
 }
 
 .canvas-container {
