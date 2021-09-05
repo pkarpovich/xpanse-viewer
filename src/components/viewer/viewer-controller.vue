@@ -1,6 +1,13 @@
 <template>
-  <frame :frame="currentFrame" :width="500" :height="300" />
-  <frames-timeline :frames="frames" />
+  <frame
+    :frame="currentFrame.frame"
+    :id="currentFrame.id"
+    :width="1100"
+    :height="800"
+    @stop-animation="stopAnimation"
+    @change-frame="handleChangeFrame"
+  />
+  <!--  <frames-timeline :frames="frames" :currentFrameId="currentFrame.id" />-->
 </template>
 
 <script>
@@ -17,7 +24,7 @@ const FRAMES_INTERVAL_TIMEOUT = 1000 / FPS;
 export default defineComponent({
   name: "ViewerController",
   components: {
-    FramesTimeline,
+    // FramesTimeline,
     Frame,
   },
   props: {
@@ -49,7 +56,7 @@ export default defineComponent({
           new Promise((resolve, reject) => {
             const image = new Image();
             image.src = f.file;
-            image.onload = () => resolve(image);
+            image.onload = () => resolve({ id: f.id, frame: image });
             image.onerror = reject;
           })
       )
@@ -60,26 +67,36 @@ export default defineComponent({
     };
   },
   mounted() {
-    this.framesIntervalId = setInterval(
-      this.setNextFrameIndex,
-      FRAMES_INTERVAL_TIMEOUT
-    );
+    this.startAnimation();
   },
   beforeUnmount() {
     if (this.framesIntervalId) {
-      this.stopFramesInterval();
+      this.stopAnimation();
     }
   },
 
   methods: {
-    setNextFrameIndex() {
-      const nextFrameIndex = this.currentFrameIndex + 1;
+    setNextFrameIndex(delta = 1) {
+      const nextFrameIndex = this.currentFrameIndex + delta;
 
       this.currentFrameIndex =
-        nextFrameIndex !== this.frames.length ? nextFrameIndex : 0;
+        nextFrameIndex < 0
+          ? this.frames.length - 1
+          : nextFrameIndex <= this.frames.length
+          ? nextFrameIndex
+          : 0;
     },
-    stopFramesInterval() {
+    startAnimation() {
+      this.framesIntervalId = setInterval(
+        this.setNextFrameIndex,
+        FRAMES_INTERVAL_TIMEOUT
+      );
+    },
+    stopAnimation() {
       clearInterval(this.framesIntervalId);
+    },
+    handleChangeFrame({ delta }) {
+      this.setNextFrameIndex(delta);
     },
   },
 });

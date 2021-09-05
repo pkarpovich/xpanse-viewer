@@ -1,6 +1,9 @@
 import { access, readdir, writeFile } from "fs/promises";
-import { nanoid } from "nanoid";
+import { customAlphabet } from "nanoid";
 import { of } from "await-of";
+
+const alphabet = "ModuleSymbhasOwnPrABCDEFGHNRVfgctiUvzKqYTJkLxpZXIjQW";
+const nanoid = customAlphabet(alphabet, 21);
 
 const MANIFEST_FILE_NAME = "manifest.json";
 
