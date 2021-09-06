@@ -23,16 +23,22 @@ export default defineComponent({
     return {
       infoRanges: [
         {
-          from: 100,
-          to: 200,
+          from: 0,
+          to: 215,
           template:
-            "<div><div>From 100 to 200</div><div>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Asperiores autem cum, eum ex expedita inventore ipsa ipsum minima molestiae neque nisi nulla perspiciatis quasi sint sit unde veniam veritatis voluptate.</div></div>",
+            "<div><div>From 0 to 215</div><div>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Asperiores autem cum, eum ex expedita inventore ipsa ipsum minima molestiae neque nisi nulla perspiciatis quasi sint sit unde veniam veritatis voluptate.</div></div>",
         },
         {
-          from: 400,
+          from: 216,
           to: 500,
           template:
-            "<div><div>From 400 to 500</div><div>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Asperiores autem cum, eum ex expedita inventore ipsa ipsum minima molestiae neque nisi nulla perspiciatis quasi sint sit unde veniam veritatis voluptate.</div></div>",
+            "<div><div>From 216 to 500</div><div>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Asperiores autem cum, eum ex expedita inventore ipsa ipsum minima molestiae neque nisi nulla perspiciatis quasi sint sit unde veniam veritatis voluptate.</div></div>",
+        },
+        {
+          from: 501,
+          to: 719,
+          template:
+            "<div><div>From 501 to 720</div><div>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Asperiores autem cum, eum ex expedita inventore ipsa ipsum minima molestiae neque nisi nulla perspiciatis quasi sint sit unde veniam veritatis voluptate.</div></div>",
         },
       ],
     };

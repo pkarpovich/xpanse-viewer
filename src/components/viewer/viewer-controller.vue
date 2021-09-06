@@ -18,7 +18,8 @@
   <div class="timeline-container" ref="timelineContainer">
     <frames-timeline
       :frames="frames"
-      :currentFrameId="currentFrame.id"
+      :info-ranges="infoRanges"
+      :currentFrameIndex="currentFrameIndex"
       :framesInterval="framesInterval"
       @click="handleFrameClick"
       @stop-animation="stopAnimation"
@@ -134,11 +135,9 @@ export default defineComponent({
     handleChangeFrame({ delta }) {
       this.setNextFrameIndex(delta);
     },
-    handleFrameClick(id) {
+    handleFrameClick(index) {
       this.stopAnimation();
-      const frameIndex = this.frames.findIndex((f) => f.id === id);
-
-      this.setNextFrameIndex(frameIndex - this.currentFrameIndex);
+      this.setNextFrameIndex(index - this.currentFrameIndex);
     },
   },
 });

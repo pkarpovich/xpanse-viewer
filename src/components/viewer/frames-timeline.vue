@@ -1,15 +1,17 @@
 <template>
   <div
-    v-for="item in frames"
+    v-for="item in timelineItems"
     :key="item.id"
     :class="`frame-container ${
-      currentFrameId === item.id ? 'frame-container--selected' : ''
+      item.from <= currentFrameIndex && item.to >= currentFrameIndex
+        ? 'frame-container--selected'
+        : ''
     }`"
-    @click="handleClick(item.id)"
+    @click="handleClick(item.from)"
   >
     <frame
       :id="item.id"
-      :frame="item.frame"
+      :frame="item.preview"
       :frames-interval="framesInterval"
       @stop-animation="handleStopAnimation"
     />
@@ -27,12 +29,16 @@ export default defineComponent({
       type: Array,
       required: true,
     },
-    currentFrameId: {
-      type: String,
+    currentFrameIndex: {
+      type: Number,
       required: true,
     },
     framesInterval: {
       type: Number,
+      required: true,
+    },
+    infoRanges: {
+      type: Array,
       required: true,
     },
   },
@@ -40,6 +46,14 @@ export default defineComponent({
     Frame,
   },
   emits: ["click", "stop-animation"],
+  computed: {
+    timelineItems() {
+      return this.infoRanges.map((r) => ({
+        ...r,
+        preview: this.frames?.[r.to]?.frame ?? null,
+      }));
+    },
+  },
   methods: {
     handleClick(id) {
       this.$emit("click", id);
