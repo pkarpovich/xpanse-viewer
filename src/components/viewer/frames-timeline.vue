@@ -7,7 +7,7 @@
         ? 'frame-container--selected'
         : ''
     }`"
-    @click="handleClick(item.from)"
+    @click="handleClick(item.to)"
   >
     <frame
       :id="item.id"

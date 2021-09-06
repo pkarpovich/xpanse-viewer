@@ -39,6 +39,7 @@ import FramesTimeline from "./frames-timeline";
 
 const FPS = 60;
 const FRAMES_INTERVAL = 1000 / FPS;
+const INERTIA_INTERVAL = 1000;
 
 export default defineComponent({
   name: "ViewerController",
@@ -139,7 +140,7 @@ export default defineComponent({
       setTimeout(() => {
         clearInterval(inertiaIntervalId);
         this.prevDelta = null;
-      }, 400);
+      }, INERTIA_INTERVAL);
     },
     stopAnimation() {
       clearInterval(this.framesIntervalId);
