@@ -12,6 +12,7 @@
         :framesInterval="framesInterval"
         @stop-animation="stopAnimation"
         @change-frame="handleChangeFrame"
+        @start-inertia="startInertia"
       />
     </div>
   </div>
@@ -58,6 +59,7 @@ export default defineComponent({
   },
   data() {
     return {
+      prevDelta: null,
       currentFrameIndex: 0,
       framesIntervalId: null,
       framesInterval: FRAMES_INTERVAL,
@@ -107,37 +109,52 @@ export default defineComponent({
 
   methods: {
     setNextFrameIndex(delta = 1) {
-      const nextFrameIndex = this.currentFrameIndex + delta;
+      return () => {
+        const nextFrameIndex = this.currentFrameIndex + delta;
 
-      this.currentFrameIndex =
-        nextFrameIndex < 0
-          ? this.frames.length - 1
-          : nextFrameIndex < this.frames.length
-          ? nextFrameIndex
-          : 0;
-
-      if (this.framesIntervalId) {
-        this.$refs.timelineContainer
-          .querySelector(`#${this.frames[this.currentFrameIndex].id}`)
-          ?.scrollIntoView?.();
-      }
+        this.currentFrameIndex =
+          nextFrameIndex < 0
+            ? this.frames.length - 1
+            : nextFrameIndex < this.frames.length
+            ? nextFrameIndex
+            : 0;
+      };
     },
     startAnimation() {
       this.framesIntervalId = setInterval(
-        this.setNextFrameIndex,
+        this.setNextFrameIndex(),
         this.framesInterval
       );
+    },
+    startInertia() {
+      if (!this.prevDelta) {
+        return;
+      }
+
+      const inertiaIntervalId = setInterval(
+        this.setNextFrameIndex(this.prevDelta > 0 ? 2 : -2),
+        this.framesInterval
+      );
+
+      setTimeout(() => {
+        clearInterval(inertiaIntervalId);
+        this.prevDelta = null;
+      }, 400);
     },
     stopAnimation() {
       clearInterval(this.framesIntervalId);
       this.framesIntervalId = null;
     },
     handleChangeFrame({ delta }) {
-      this.setNextFrameIndex(delta);
+      this.prevDelta = delta;
+      this.setNextFrameIndex(delta)();
     },
     handleFrameClick(index) {
+      this.prevDelta = 1;
+
       this.stopAnimation();
-      this.setNextFrameIndex(index - this.currentFrameIndex);
+      this.setNextFrameIndex(index - this.currentFrameIndex)();
+      this.startInertia();
     },
   },
 });

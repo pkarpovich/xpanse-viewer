@@ -5,6 +5,7 @@
       :id="id"
       @mousemove="handleMouseMove()($event)"
       @mousedown="handleMouseDown"
+      @mouseup="handleMouseUp"
     />
   </div>
 </template>
@@ -36,7 +37,7 @@ export default defineComponent({
       height: 0,
     };
   },
-  emits: ["stop-animation", "change-frame"],
+  emits: ["stop-animation", "change-frame", "start-inertia"],
   mounted() {
     this.resizeObserver = new ResizeObserver(this.handleResize);
     this.resizeObserver.observe(this.$refs.canvasContainerRef);
@@ -81,6 +82,9 @@ export default defineComponent({
           });
         }
       }, this.framesInterval);
+    },
+    handleMouseUp() {
+      this.$emit("start-inertia");
     },
     handleResize(entries) {
       const [container] = entries;
